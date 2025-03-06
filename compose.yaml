@@ -1,12 +1,11 @@
+# control-rooom/compose.yaml
 services:
   traefik:
     image: "traefik:v3.3"
-    container_name: "traefik"
-
     command:
       - "--api.insecure=true"
       - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker.exposedbydefault=true "
       - "--entryPoints.web.address=:80"
     ports:
       - "80:80"
@@ -14,7 +13,11 @@ services:
 
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "./traefik  .yaml:/etc/traefik/traefik.yaml"
+    networks:
+      - backend
 
 networks:
   backend:
+
+volumes:
+  data:
