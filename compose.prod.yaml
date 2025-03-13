@@ -2,6 +2,7 @@ name: findit
 
 include:
   - elk/compose.yaml
+  - user-service/compose.prod.yaml
 
 services:
   traefik:
