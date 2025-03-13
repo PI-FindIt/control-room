@@ -1,3 +1,6 @@
 [submodule "documentation"]
 	path = documentation
 	url = git@github.com:PI-FindIt/documentation.git
+[submodule "user-service"]
+	path = user-service
+	url = git@github.com:PI-FindIt/user-service.git
