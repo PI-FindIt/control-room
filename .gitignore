@@ -1,3 +1,4 @@
+.env
 .env.* # Ignore all .env files except .env.example
 !.env.example
 .DS_Store

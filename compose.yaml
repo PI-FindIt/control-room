@@ -1,23 +1,29 @@
-# control-rooom/compose.yaml
+name: findit
+
+include:
+  - elk/compose.yaml
+
 services:
   traefik:
     image: "traefik:v3.3"
+    restart: unless-stopped
     command:
       - "--api.insecure=true"
       - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=true "
+      - "--providers.docker.exposedbydefault=true"
       - "--entryPoints.web.address=:80"
     ports:
       - "80:80"
       - "8080:8080"
-
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
     networks:
       - backend
+      - analytics
 
 networks:
   backend:
+  analytics:
 
 volumes:
   data:
