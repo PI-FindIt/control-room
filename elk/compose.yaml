@@ -49,11 +49,7 @@ services:
       - "traefik.http.routers.elastic.rule=HostRegexp(`elastic\\..+`)"
       - "co.elastic.logs/module=elasticsearch"
     healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "curl -s http://localhost:9200",
-        ]
+      test: ["CMD-SHELL", "curl -s http://localhost:9200"]
       interval: 3s
       timeout: 10s
       retries: 120
@@ -71,6 +67,9 @@ services:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
       - ELASTICSEARCH_USERNAME=kibana_system
       - ELASTICSEARCH_PASSWORD=${KIBANA_PASSWORD}
+      - XPACK_SECURITY_ENCRYPTIONKEY=${ENCRYPTION_KEY}
+      - XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=${ENCRYPTION_KEY}
+      - XPACK_REPORTING_ENCRYPTIONKEY=${ENCRYPTION_KEY}
     networks:
       - analytics
     volumes:
@@ -89,29 +88,18 @@ services:
       timeout: 10s
       retries: 120
 
-  # logstash:
-  #   depends_on:
-  #     elasticsearch:
-  #       condition: service_healthy
-  #     kibana:
-  #       condition: service_healthy
-  #     elk-setup:
-  #       condition: service_completed_successfully
-  #   image: docker.elastic.co/logstash/logstash:${STACK_VERSION}
-  #   user: root
-  #   networks:
-  #     - analytics
-  #   volumes:
-  #     - logstashdata:/usr/share/logstash/data
-  #     - "./logstash_ingest_data/:/usr/share/logstash/ingest_data/"
-  #     - "./logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro"
-  #   environment:
-  #     - xpack.monitoring.enabled=false
-  #     - ELASTIC_USER=elastic
-  #     - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
-  #     - ELASTIC_HOSTS=https://elasticsearch:9200
-  #   labels:
-  #     - "co.elastic.logs/module=logstash"
+  apm-server:
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+      elk-setup:
+        condition: service_completed_successfully
+    image: docker.elastic.co/apm/apm-server:8.17.3
+    user: apm-server
+    networks:
+      - analytics
+    volumes:
+      - ./apm-config.yaml:/usr/share/apm-server/apm-server.yml:ro
 
 volumes:
   esdata:
