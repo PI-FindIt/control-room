@@ -1,30 +1,4 @@
 services:
-  elk-setup:
-    image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
-    user: "0"
-    networks:
-      - analytics
-    command: >
-      bash -c '
-        if [ x${ELASTIC_PASSWORD} == x ]; then
-          echo "Set the ELASTIC_PASSWORD environment variable in the .env file";
-          exit 1;
-        elif [ x${KIBANA_PASSWORD} == x ]; then
-          echo "Set the KIBANA_PASSWORD environment variable in the .env file";
-          exit 1;
-        fi;
-        echo "Waiting for Elasticsearch availability";
-        until curl -s "http://elasticsearch:9200"; do sleep 1; done;
-        echo "Setting kibana_system password";
-        until curl -s -X POST -u "elastic:${ELASTIC_PASSWORD}" -H "Content-Type: application/json" http://elasticsearch:9200/_security/user/kibana_system/_password -d "{\"password\":\"${KIBANA_PASSWORD}\"}" | grep -q "^{}"; do sleep 1; done;
-        echo "All done!";
-      '
-    healthcheck:
-      test: ["CMD-SHELL", "[ -f config/certs/elasticsearch/elasticsearch.crt ]"]
-      interval: 1s
-      timeout: 5s
-      retries: 120
-
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
     restart: unless-stopped
@@ -36,6 +10,14 @@ services:
       - bootstrap.memory_lock=true
       - xpack.security.enabled=true
       - xpack.security.http.ssl.enabled=false
+    command: >
+      bash -c '
+        set -m
+        /usr/local/bin/docker-entrypoint.sh eswrapper &
+        until curl -s http://localhost:9200; do sleep 1; done;
+        curl -s -X POST -u "elastic:elastic" -H "Content-Type: application/json" http://localhost:9200/_security/user/kibana_system/_password -d "{\"password\": \"elastic\"}"
+        fg %1
+      '
     ulimits:
       memlock:
         soft: -1
@@ -58,8 +40,6 @@ services:
     depends_on:
       elasticsearch:
         condition: service_healthy
-      elk-setup:
-        condition: service_completed_successfully
     image: docker.elastic.co/kibana/kibana:8.17.0
     restart: unless-stopped
     environment:
@@ -92,8 +72,6 @@ services:
     depends_on:
       elasticsearch:
         condition: service_healthy
-      elk-setup:
-        condition: service_completed_successfully
     image: docker.elastic.co/apm/apm-server:8.17.3
     user: apm-server
     networks:
