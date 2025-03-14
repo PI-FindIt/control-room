@@ -4,3 +4,9 @@
 [submodule "user-service"]
 	path = user-service
 	url = git@github.com:PI-FindIt/user-service.git
+[submodule "client-app"]
+	path = client-app
+	url = git@github.com:PI-FindIt/client-app.git
+[submodule "supermarket-admin-app"]
+	path = supermarket-admin-app
+	url = git@github.com:PI-FindIt/supermarket-admin-app.git
