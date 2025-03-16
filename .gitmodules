@@ -13,3 +13,6 @@
 [submodule "product-service"]
 	path = product-service
 	url = git@github.com:PI-FindIt/product-service.git
+[submodule "client-app/utils"]
+	path = client-app/utils
+	url =git@github.com:PI-FindIt/utils.git
