@@ -4,6 +4,7 @@ include:
   - elk/compose.yaml
   - user-service/compose.yaml
   - product-service/compose.yaml
+  - category-service/compose.yaml
 
 services:
   traefik:
