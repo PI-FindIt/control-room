@@ -1,0 +1,14 @@
+federation_version: 2
+subgraphs:
+  # products:
+  #   routing_url: http://product-service:8000/graphql
+  #   schema:
+  #     subgraph_url: http://product-service:8000/graphql
+  categories:
+    routing_url: http://api-debug.localhost/category/graphql # http://category-service:8000/graphql
+    schema:
+      subgraph_url: http://api-debug.localhost/category/graphql
+  # users:
+  #   routing_url: http://user-service:8000/graphql
+  #   schema:
+  #     subgraph_url: http://user-service:8000/graphql
