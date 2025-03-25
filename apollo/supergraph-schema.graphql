@@ -38,7 +38,7 @@ input CategoryBase
 scalar join__FieldSet
 
 enum join__Graph {
-  CATEGORIES @join__graph(name: "categories", url: "http://api-debug.localhost/category/graphql")
+  CATEGORIES @join__graph(name: "categories", url: "http://findit-category-service-1:8000/graphql")
 }
 
 scalar link__Import
