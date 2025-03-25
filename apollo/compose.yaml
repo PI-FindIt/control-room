@@ -10,4 +10,3 @@ services:
     labels:
       - "traefik.http.routers.apollo.rule=HostRegexp(`api\\..+`)"
       - "traefik.http.services.apollo-router.loadbalancer.server.port=4000"
-
