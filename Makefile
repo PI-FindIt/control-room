@@ -16,5 +16,5 @@ clean:
 	@echo "🧹 Housekeeping!"
 
 soft:
-	@docker compose up --build -docker
-	@docker compose down elastic kibana apm-server
+	docker compose up -d --build
+	docker compose down elasticsearch kibana apm-server
