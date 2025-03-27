@@ -5,9 +5,9 @@ subgraphs:
   #   schema:
   #     subgraph_url: http://product-service:8000/graphql
   categories:
-    routing_url: http://api-debug.localhost/category/graphql # http://category-service:8000/graphql
+    routing_url: http://findit-category-service-1:8000/graphql
     schema:
-      subgraph_url: http://api-debug.localhost/category/graphql
+      subgraph_url: http://findit-category-service-1:8000/graphql
   # users:
   #   routing_url: http://user-service:8000/graphql
   #   schema:
