@@ -24,15 +24,15 @@ type Category
   @join__type(graph: CATEGORIES)
 {
   name: String!
-  parentId: Int
-  id: Int!
+  friendlyName: String!
+  children: [Category!]!
+  parents: [Category!]!
 }
 
-input CategoryBase
+input CategoryInput
   @join__type(graph: CATEGORIES)
 {
   name: String!
-  parentId: Int
 }
 
 scalar join__FieldSet
@@ -58,12 +58,14 @@ enum link__Purpose {
 type Mutation
   @join__type(graph: CATEGORIES)
 {
-  createCategory(model: CategoryBase!): Category!
+  createCategory(model: CategoryInput!): Category!
+  updateCategory(name: String!, model: CategoryInput!): Category!
+  deleteCategory(name: String!): Boolean!
 }
 
 type Query
   @join__type(graph: CATEGORIES)
 {
-  getCategory(id: Int!): Category!
-  findByName(name: String!): [Category!]!
+  category(name: String!): Category
+  categories(name: String!, depth: Int! = -1): [Category!]!
 }
