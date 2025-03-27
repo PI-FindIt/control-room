@@ -31,3 +31,7 @@ reload:
 clean:
 	@docker rmi $(ROVER_IMAGE) 2>/dev/null || true
 	@echo "🧹 Ambiente limpo!"
+
+soft:
+	@docker compose up --build -docker
+	@docker compose down elastic kibana apm-server
