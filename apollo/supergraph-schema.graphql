@@ -29,7 +29,7 @@ type Category
   parents: [Category!]!
 }
 
-input CategoryInput
+input CategoryBase
   @join__type(graph: CATEGORIES)
 {
   name: String!
@@ -58,8 +58,8 @@ enum link__Purpose {
 type Mutation
   @join__type(graph: CATEGORIES)
 {
-  createCategory(model: CategoryInput!): Category!
-  updateCategory(name: String!, model: CategoryInput!): Category!
+  createCategory(model: CategoryBase!): Category!
+  updateCategory(name: String!, model: CategoryBase!): Category!
   deleteCategory(name: String!): Boolean!
 }
 
@@ -67,5 +67,5 @@ type Query
   @join__type(graph: CATEGORIES)
 {
   category(name: String!): Category
-  categories(name: String!, depth: Int! = -1): [Category!]!
+  categories(name: String!): [Category!]!
 }
