@@ -1,14 +1,16 @@
 schema
   @link(url: "https://specs.apollo.dev/link/v1.0")
-  @link(url: "https://specs.apollo.dev/join/v0.3", for: EXECUTION)
+  @link(url: "https://specs.apollo.dev/join/v0.4", for: EXECUTION)
 {
   query: Query
   mutation: Mutation
 }
 
+directive @join__directive(graphs: [join__Graph!], name: String!, args: join__DirectiveArguments) repeatable on SCHEMA | OBJECT | INTERFACE | FIELD_DEFINITION
+
 directive @join__enumValue(graph: join__Graph!) repeatable on ENUM_VALUE
 
-directive @join__field(graph: join__Graph, requires: join__FieldSet, provides: join__FieldSet, type: String, external: Boolean, override: String, usedOverridden: Boolean) repeatable on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
+directive @join__field(graph: join__Graph, requires: join__FieldSet, provides: join__FieldSet, type: String, external: Boolean, override: String, usedOverridden: Boolean, overrideLabel: String) repeatable on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
 
 directive @join__graph(name: String!, url: String!) on ENUM_VALUE
 
@@ -20,8 +22,23 @@ directive @join__unionMember(graph: join__Graph!, member: String!) repeatable on
 
 directive @link(url: String, as: String, for: link__Purpose, import: [link__Import]) repeatable on SCHEMA
 
+type Brand
+  @join__type(graph: BRANDS, key: "name")
+{
+  name: String!
+  friendlyName: String!
+  children: [Brand!]!
+  parents: [Brand!]!
+}
+
+input BrandBase
+  @join__type(graph: BRANDS)
+{
+  name: String!
+}
+
 type Category
-  @join__type(graph: CATEGORIES)
+  @join__type(graph: CATEGORIES, key: "name")
 {
   name: String!
   friendlyName: String!
@@ -35,9 +52,12 @@ input CategoryBase
   name: String!
 }
 
+scalar join__DirectiveArguments
+
 scalar join__FieldSet
 
 enum join__Graph {
+  BRANDS @join__graph(name: "brands", url: "http://findit-brand-service-1:8000/graphql")
   CATEGORIES @join__graph(name: "categories", url: "http://findit-category-service-1:8000/graphql")
 }
 
@@ -56,16 +76,23 @@ enum link__Purpose {
 }
 
 type Mutation
+  @join__type(graph: BRANDS)
   @join__type(graph: CATEGORIES)
 {
-  createCategory(model: CategoryBase!): Category!
-  updateCategory(name: String!, model: CategoryBase!): Category!
-  deleteCategory(name: String!): Boolean!
+  createBrand(model: BrandBase!): Brand! @join__field(graph: BRANDS)
+  updateBrand(name: String!, model: BrandBase!): Brand! @join__field(graph: BRANDS)
+  deleteBrand(name: String!): Boolean! @join__field(graph: BRANDS)
+  createCategory(model: CategoryBase!): Category! @join__field(graph: CATEGORIES)
+  updateCategory(name: String!, model: CategoryBase!): Category! @join__field(graph: CATEGORIES)
+  deleteCategory(name: String!): Boolean! @join__field(graph: CATEGORIES)
 }
 
 type Query
+  @join__type(graph: BRANDS)
   @join__type(graph: CATEGORIES)
 {
-  category(name: String!): Category
-  categories(name: String!): [Category!]!
+  brand(name: String!): Brand @join__field(graph: BRANDS)
+  brands(name: String!): [Brand!]! @join__field(graph: BRANDS)
+  category(name: String!): Category @join__field(graph: CATEGORIES)
+  categories(name: String!): [Category!]! @join__field(graph: CATEGORIES)
 }

@@ -16,3 +16,6 @@
 [submodule "category-service"]
 	path = category-service
 	url = git@github.com:PI-FindIt/category-service.git
+[submodule "brand-service"]
+	path = brand-service
+	url = git@github.com:PI-FindIt/brand-service.git

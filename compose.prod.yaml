@@ -3,7 +3,9 @@ name: findit
 include:
   - elk/compose.yaml
   - apollo/compose.yaml
+  - brand-service/compose.prod.yaml
   - category-service/compose.prod.yaml
+  - product-service/compose.prod.yaml
 
 services:
   traefik:
