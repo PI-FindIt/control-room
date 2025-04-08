@@ -24,11 +24,13 @@ directive @link(url: String, as: String, for: link__Purpose, import: [link__Impo
 
 type Brand
   @join__type(graph: BRANDS, key: "name")
+  @join__type(graph: PRODUCTS, key: "name", extension: true)
 {
   name: String!
-  friendlyName: String!
-  children: [Brand!]!
-  parents: [Brand!]!
+  friendlyName: String! @join__field(graph: BRANDS)
+  children: [Brand!]! @join__field(graph: BRANDS)
+  parents: [Brand!]! @join__field(graph: BRANDS)
+  products: [Product!]! @join__field(graph: PRODUCTS)
 }
 
 input BrandBase
@@ -39,11 +41,13 @@ input BrandBase
 
 type Category
   @join__type(graph: CATEGORIES, key: "name")
+  @join__type(graph: PRODUCTS, key: "name", extension: true)
 {
   name: String!
-  friendlyName: String!
-  children: [Category!]!
-  parents: [Category!]!
+  friendlyName: String! @join__field(graph: CATEGORIES)
+  children: [Category!]! @join__field(graph: CATEGORIES)
+  parents: [Category!]! @join__field(graph: CATEGORIES)
+  products: [Product!]! @join__field(graph: PRODUCTS)
 }
 
 input CategoryBase
@@ -59,7 +63,15 @@ scalar join__FieldSet
 enum join__Graph {
   BRANDS @join__graph(name: "brands", url: "http://findit-brand-service-1:8000/graphql")
   CATEGORIES @join__graph(name: "categories", url: "http://findit-category-service-1:8000/graphql")
+  PRODUCTS @join__graph(name: "products", url: "http://findit-product-service-1:8000/graphql")
 }
+
+"""
+The `JSON` scalar type represents JSON values as specified by [ECMA-404](https://ecma-international.org/wp-content/uploads/ECMA-404_2nd_edition_december_2017.pdf).
+"""
+scalar JSON
+  @join__type(graph: PRODUCTS)
+  @specifiedBy(url: "https://ecma-international.org/wp-content/uploads/ECMA-404_2nd_edition_december_2017.pdf")
 
 scalar link__Import
 
@@ -78,6 +90,7 @@ enum link__Purpose {
 type Mutation
   @join__type(graph: BRANDS)
   @join__type(graph: CATEGORIES)
+  @join__type(graph: PRODUCTS)
 {
   createBrand(model: BrandBase!): Brand! @join__field(graph: BRANDS)
   updateBrand(name: String!, model: BrandBase!): Brand! @join__field(graph: BRANDS)
@@ -85,14 +98,125 @@ type Mutation
   createCategory(model: CategoryBase!): Category! @join__field(graph: CATEGORIES)
   updateCategory(name: String!, model: CategoryBase!): Category! @join__field(graph: CATEGORIES)
   deleteCategory(name: String!): Boolean! @join__field(graph: CATEGORIES)
+  createProduct(model: ProductInput!): Product! @join__field(graph: PRODUCTS)
+  deleteProduct(name: String!): Boolean! @join__field(graph: PRODUCTS)
+}
+
+enum NutriScore
+  @join__type(graph: PRODUCTS)
+{
+  A @join__enumValue(graph: PRODUCTS)
+  B @join__enumValue(graph: PRODUCTS)
+  C @join__enumValue(graph: PRODUCTS)
+  D @join__enumValue(graph: PRODUCTS)
+  E @join__enumValue(graph: PRODUCTS)
+  UNKNOWN @join__enumValue(graph: PRODUCTS)
+  NOT_APPLICABLE @join__enumValue(graph: PRODUCTS)
+}
+
+input NutriScoreFilter
+  @join__type(graph: PRODUCTS)
+{
+  value: NutriScore!
+  op: Operator!
+}
+
+enum Operator
+  @join__type(graph: PRODUCTS)
+{
+  EQ @join__enumValue(graph: PRODUCTS)
+  NE @join__enumValue(graph: PRODUCTS)
+  LT @join__enumValue(graph: PRODUCTS)
+  LE @join__enumValue(graph: PRODUCTS)
+  GT @join__enumValue(graph: PRODUCTS)
+  GE @join__enumValue(graph: PRODUCTS)
+  LIKE @join__enumValue(graph: PRODUCTS)
+  ILIKE @join__enumValue(graph: PRODUCTS)
+  IN @join__enumValue(graph: PRODUCTS)
+  NOT_IN @join__enumValue(graph: PRODUCTS)
+  IS @join__enumValue(graph: PRODUCTS)
+  IS_NOT @join__enumValue(graph: PRODUCTS)
+  CONTAINS @join__enumValue(graph: PRODUCTS)
+  NOT_CONTAINS @join__enumValue(graph: PRODUCTS)
+  ANY @join__enumValue(graph: PRODUCTS)
+  ALL @join__enumValue(graph: PRODUCTS)
+}
+
+type Product
+  @join__type(graph: PRODUCTS)
+{
+  ean: String!
+  name: String!
+  genericName: String!
+  nutrition: JSON!
+  nutriScore: NutriScore!
+  ingredients: String!
+  quantity: String!
+  unit: String!
+  keywords: [String!]!
+  images: [String!]!
+  brandName: String
+  categoryName: String
+  category: Category!
+  brand: Brand!
+}
+
+input ProductFilter
+  @join__type(graph: PRODUCTS)
+{
+  ean: StrFilter = null
+  name: StrFilter = null
+  genericName: StrFilter = null
+  nutriScore: NutriScoreFilter = null
+  ingredients: StrFilter = null
+  quantity: StrFilter = null
+  unit: StrFilter = null
+  keywords: StrListFilter = null
+  images: StrListFilter = null
+  brandName: StrFilter = null
+  categoryName: StrFilter = null
+}
+
+input ProductInput
+  @join__type(graph: PRODUCTS)
+{
+  ean: String!
+  name: String!
+  genericName: String!
+  nutrition: JSON!
+  nutriScore: NutriScore!
+  ingredients: String!
+  quantity: String!
+  unit: String!
+  keywords: [String!]!
+  images: [String!]!
+  brandName: String
+  categoryName: String
 }
 
 type Query
   @join__type(graph: BRANDS)
   @join__type(graph: CATEGORIES)
+  @join__type(graph: PRODUCTS)
 {
   brand(name: String!): Brand @join__field(graph: BRANDS)
   brands(name: String!): [Brand!]! @join__field(graph: BRANDS)
   category(name: String!): Category @join__field(graph: CATEGORIES)
   categories(name: String!): [Category!]! @join__field(graph: CATEGORIES)
+  product(ean: String!): Product @join__field(graph: PRODUCTS)
+  products(filters: ProductFilter!): [Product!]! @join__field(graph: PRODUCTS)
+}
+
+input StrFilter
+  @join__type(graph: PRODUCTS)
+{
+  value: String!
+  op: Operator!
+}
+
+input StrListFilter
+  @join__type(graph: PRODUCTS)
+{
+  value: [String!]!
+  op: Operator!
 }
