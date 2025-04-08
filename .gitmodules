@@ -19,3 +19,6 @@
 [submodule "brand-service"]
 	path = brand-service
 	url = git@github.com:PI-FindIt/brand-service.git
+[submodule "supermarket-service"]
+	path = supermarket-service
+	url = git@github.com:PI-FindIt/supermarket-service.git
