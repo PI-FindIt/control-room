@@ -8,6 +8,10 @@ subgraphs:
     routing_url: http://findit-product-service-1:8000/graphql
     schema:
       subgraph_url: http://findit-product-service-1:8000/graphql
+  supermarkets:
+    routing_url: http://findit-supermarket-service-1:8000/graphql
+    schema:
+      subgraph_url: http://findit-supermarket-service-1:8000/graphql
   categories:
     routing_url: http://findit-category-service-1:8000/graphql
     schema:

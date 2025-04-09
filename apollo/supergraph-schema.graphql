@@ -64,6 +64,7 @@ enum join__Graph {
   BRANDS @join__graph(name: "brands", url: "http://findit-brand-service-1:8000/graphql")
   CATEGORIES @join__graph(name: "categories", url: "http://findit-category-service-1:8000/graphql")
   PRODUCTS @join__graph(name: "products", url: "http://findit-product-service-1:8000/graphql")
+  SUPERMARKETS @join__graph(name: "supermarkets", url: "http://findit-supermarket-service-1:8000/graphql")
 }
 
 """
@@ -123,42 +124,45 @@ input NutriScoreFilter
 
 enum Operator
   @join__type(graph: PRODUCTS)
+  @join__type(graph: SUPERMARKETS)
 {
-  EQ @join__enumValue(graph: PRODUCTS)
-  NE @join__enumValue(graph: PRODUCTS)
-  LT @join__enumValue(graph: PRODUCTS)
-  LE @join__enumValue(graph: PRODUCTS)
-  GT @join__enumValue(graph: PRODUCTS)
-  GE @join__enumValue(graph: PRODUCTS)
-  LIKE @join__enumValue(graph: PRODUCTS)
-  ILIKE @join__enumValue(graph: PRODUCTS)
-  IN @join__enumValue(graph: PRODUCTS)
-  NOT_IN @join__enumValue(graph: PRODUCTS)
-  IS @join__enumValue(graph: PRODUCTS)
-  IS_NOT @join__enumValue(graph: PRODUCTS)
-  CONTAINS @join__enumValue(graph: PRODUCTS)
-  NOT_CONTAINS @join__enumValue(graph: PRODUCTS)
-  ANY @join__enumValue(graph: PRODUCTS)
-  ALL @join__enumValue(graph: PRODUCTS)
+  EQ @join__enumValue(graph: PRODUCTS) @join__enumValue(graph: SUPERMARKETS)
+  NE @join__enumValue(graph: PRODUCTS) @join__enumValue(graph: SUPERMARKETS)
+  LT @join__enumValue(graph: PRODUCTS) @join__enumValue(graph: SUPERMARKETS)
+  LE @join__enumValue(graph: PRODUCTS) @join__enumValue(graph: SUPERMARKETS)
+  GT @join__enumValue(graph: PRODUCTS) @join__enumValue(graph: SUPERMARKETS)
+  GE @join__enumValue(graph: PRODUCTS) @join__enumValue(graph: SUPERMARKETS)
+  LIKE @join__enumValue(graph: PRODUCTS) @join__enumValue(graph: SUPERMARKETS)
+  ILIKE @join__enumValue(graph: PRODUCTS) @join__enumValue(graph: SUPERMARKETS)
+  IN @join__enumValue(graph: PRODUCTS) @join__enumValue(graph: SUPERMARKETS)
+  NOT_IN @join__enumValue(graph: PRODUCTS) @join__enumValue(graph: SUPERMARKETS)
+  IS @join__enumValue(graph: PRODUCTS) @join__enumValue(graph: SUPERMARKETS)
+  IS_NOT @join__enumValue(graph: PRODUCTS) @join__enumValue(graph: SUPERMARKETS)
+  CONTAINS @join__enumValue(graph: PRODUCTS) @join__enumValue(graph: SUPERMARKETS)
+  NOT_CONTAINS @join__enumValue(graph: PRODUCTS) @join__enumValue(graph: SUPERMARKETS)
+  ANY @join__enumValue(graph: PRODUCTS) @join__enumValue(graph: SUPERMARKETS)
+  ALL @join__enumValue(graph: PRODUCTS) @join__enumValue(graph: SUPERMARKETS)
 }
 
 type Product
-  @join__type(graph: PRODUCTS)
+  @join__type(graph: PRODUCTS, key: "ean", resolvable: true)
+  @join__type(graph: SUPERMARKETS, key: "ean", extension: true)
 {
   ean: String!
-  name: String!
-  genericName: String!
-  nutrition: JSON!
-  nutriScore: NutriScore!
-  ingredients: String!
-  quantity: String!
-  unit: String!
-  keywords: [String!]!
-  images: [String!]!
-  brandName: String
-  categoryName: String
-  category: Category!
-  brand: Brand!
+  name: String! @join__field(graph: PRODUCTS)
+  genericName: String! @join__field(graph: PRODUCTS)
+  nutrition: JSON! @join__field(graph: PRODUCTS)
+  nutriScore: NutriScore! @join__field(graph: PRODUCTS)
+  ingredients: String! @join__field(graph: PRODUCTS)
+  quantity: String! @join__field(graph: PRODUCTS)
+  unit: String! @join__field(graph: PRODUCTS)
+  keywords: [String!]! @join__field(graph: PRODUCTS)
+  images: [String!]! @join__field(graph: PRODUCTS)
+  brandName: String @join__field(graph: PRODUCTS)
+  categoryName: String @join__field(graph: PRODUCTS)
+  category: Category! @join__field(graph: PRODUCTS)
+  brand: Brand! @join__field(graph: PRODUCTS)
+  supermarkets: [SupermarketWithPrice!]! @join__field(graph: SUPERMARKETS)
 }
 
 input ProductFilter
@@ -194,10 +198,18 @@ input ProductInput
   categoryName: String
 }
 
+type ProductWithPrice
+  @join__type(graph: SUPERMARKETS)
+{
+  price: Float!
+  product: Product!
+}
+
 type Query
   @join__type(graph: BRANDS)
   @join__type(graph: CATEGORIES)
   @join__type(graph: PRODUCTS)
+  @join__type(graph: SUPERMARKETS)
 {
   brand(name: String!): Brand @join__field(graph: BRANDS)
   brands(name: String!): [Brand!]! @join__field(graph: BRANDS)
@@ -205,10 +217,14 @@ type Query
   categories(name: String!): [Category!]! @join__field(graph: CATEGORIES)
   product(ean: String!): Product @join__field(graph: PRODUCTS)
   products(filters: ProductFilter!): [Product!]! @join__field(graph: PRODUCTS)
+  supermarketLocation(supermarketId: Int!, id: Int!): SupermarketLocation @join__field(graph: SUPERMARKETS)
+  supermarket(id: Int!): Supermarket @join__field(graph: SUPERMARKETS)
+  supermarkets(filters: SupermarketFilter!): [Supermarket!]! @join__field(graph: SUPERMARKETS)
 }
 
 input StrFilter
   @join__type(graph: PRODUCTS)
+  @join__type(graph: SUPERMARKETS)
 {
   value: String!
   op: Operator!
@@ -216,7 +232,65 @@ input StrFilter
 
 input StrListFilter
   @join__type(graph: PRODUCTS)
+  @join__type(graph: SUPERMARKETS)
 {
   value: [String!]!
   op: Operator!
+}
+
+type Supermarket
+  @join__type(graph: SUPERMARKETS)
+{
+  id: Int!
+  name: String!
+  image: String
+  services: [SupermarketServices!]!
+  description: String
+  locations: [SupermarketLocation!]!
+  products: [ProductWithPrice!]!
+}
+
+input SupermarketFilter
+  @join__type(graph: SUPERMARKETS)
+{
+  ean: StrFilter = null
+  name: StrFilter = null
+  genericName: StrFilter = null
+  ingredients: StrFilter = null
+  quantity: StrFilter = null
+  unit: StrFilter = null
+  keywords: StrListFilter = null
+  images: StrListFilter = null
+  brandName: StrFilter = null
+  categoryName: StrFilter = null
+}
+
+type SupermarketLocation
+  @join__type(graph: SUPERMARKETS)
+{
+  supermarketId: Int!
+  id: Int!
+  name: String!
+  image: String
+  latitude: Float!
+  longitude: Float!
+  supermarket: Supermarket!
+}
+
+enum SupermarketServices
+  @join__type(graph: SUPERMARKETS)
+{
+  COFFEE @join__enumValue(graph: SUPERMARKETS)
+  GAS_STATION @join__enumValue(graph: SUPERMARKETS)
+  NEWSSTAND @join__enumValue(graph: SUPERMARKETS)
+  PHARMACY @join__enumValue(graph: SUPERMARKETS)
+  RESTAURANT @join__enumValue(graph: SUPERMARKETS)
+  SELF_KIOSK @join__enumValue(graph: SUPERMARKETS)
+}
+
+type SupermarketWithPrice
+  @join__type(graph: SUPERMARKETS)
+{
+  price: Float!
+  supermarket: Supermarket!
 }
