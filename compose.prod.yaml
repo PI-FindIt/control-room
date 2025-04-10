@@ -7,6 +7,7 @@ include:
   - category-service/compose.prod.yaml
   - product-service/compose.prod.yaml
   - supermarket-service/compose.prod.yaml
+  - user-service/compose.prod.yaml
 
 services:
   traefik:
