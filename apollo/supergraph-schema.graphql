@@ -56,6 +56,28 @@ input CategoryBase
   name: String!
 }
 
+input Coordinate
+  @join__type(graph: SUPERMARKETS)
+{
+  latitude: Float!
+  longitude: Float!
+  distance: Float!
+}
+
+input CoordinateFilter
+  @join__type(graph: SUPERMARKETS)
+{
+  value: Coordinate!
+  op: Operator!
+}
+
+input IntFilter
+  @join__type(graph: SUPERMARKETS)
+{
+  value: Int!
+  op: Operator!
+}
+
 scalar join__DirectiveArguments
 
 scalar join__FieldSet
@@ -218,6 +240,7 @@ type Query
   product(ean: String!): Product @join__field(graph: PRODUCTS)
   products(filters: ProductFilter!): [Product!]! @join__field(graph: PRODUCTS)
   supermarketLocation(supermarketId: Int!, id: Int!): SupermarketLocation @join__field(graph: SUPERMARKETS)
+  supermarketLocations(filters: SupermarketLocationFilter!): [SupermarketLocation!]! @join__field(graph: SUPERMARKETS)
   supermarket(id: Int!): Supermarket @join__field(graph: SUPERMARKETS)
   supermarkets(filters: SupermarketFilter!): [Supermarket!]! @join__field(graph: SUPERMARKETS)
 }
@@ -232,7 +255,6 @@ input StrFilter
 
 input StrListFilter
   @join__type(graph: PRODUCTS)
-  @join__type(graph: SUPERMARKETS)
 {
   value: [String!]!
   op: Operator!
@@ -253,16 +275,11 @@ type Supermarket
 input SupermarketFilter
   @join__type(graph: SUPERMARKETS)
 {
-  ean: StrFilter = null
+  id: IntFilter = null
   name: StrFilter = null
-  genericName: StrFilter = null
-  ingredients: StrFilter = null
-  quantity: StrFilter = null
-  unit: StrFilter = null
-  keywords: StrListFilter = null
-  images: StrListFilter = null
-  brandName: StrFilter = null
-  categoryName: StrFilter = null
+  image: StrFilter = null
+  services: SupermarketServicesListFilter = null
+  description: StrFilter = null
 }
 
 type SupermarketLocation
@@ -270,11 +287,21 @@ type SupermarketLocation
 {
   supermarketId: Int!
   id: Int!
-  name: String!
+  name: String
   image: String
   latitude: Float!
   longitude: Float!
-  supermarket: Supermarket!
+  supermarket: Supermarket
+}
+
+input SupermarketLocationFilter
+  @join__type(graph: SUPERMARKETS)
+{
+  supermarketId: IntFilter = null
+  id: IntFilter = null
+  name: StrFilter = null
+  image: StrFilter = null
+  coordinates: CoordinateFilter = null
 }
 
 enum SupermarketServices
@@ -286,6 +313,13 @@ enum SupermarketServices
   PHARMACY @join__enumValue(graph: SUPERMARKETS)
   RESTAURANT @join__enumValue(graph: SUPERMARKETS)
   SELF_KIOSK @join__enumValue(graph: SUPERMARKETS)
+}
+
+input SupermarketServicesListFilter
+  @join__type(graph: SUPERMARKETS)
+{
+  value: [SupermarketServices!]!
+  op: Operator!
 }
 
 type SupermarketWithPrice
