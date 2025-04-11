@@ -71,6 +71,15 @@ input CoordinateFilter
   op: Operator!
 }
 
+enum Gender
+  @join__type(graph: USERS)
+{
+  MALE @join__enumValue(graph: USERS)
+  FEMALE @join__enumValue(graph: USERS)
+  NON_BINARY @join__enumValue(graph: USERS)
+  OTHER @join__enumValue(graph: USERS)
+}
+
 input IntFilter
   @join__type(graph: SUPERMARKETS)
 {
@@ -87,6 +96,7 @@ enum join__Graph {
   CATEGORIES @join__graph(name: "categories", url: "http://findit-category-service-1:8000/graphql")
   PRODUCTS @join__graph(name: "products", url: "http://findit-product-service-1:8000/graphql")
   SUPERMARKETS @join__graph(name: "supermarkets", url: "http://findit-supermarket-service-1:8000/graphql")
+  USERS @join__graph(name: "users", url: "http://findit-user-service-1:8000/graphql")
 }
 
 """
@@ -110,10 +120,21 @@ enum link__Purpose {
   EXECUTION
 }
 
+type ListProduct
+  @join__type(graph: USERS)
+{
+  id: String!
+  product: Product!
+  ean: String!
+  quantity: Float!
+  supermarketId: Int!
+}
+
 type Mutation
   @join__type(graph: BRANDS)
   @join__type(graph: CATEGORIES)
   @join__type(graph: PRODUCTS)
+  @join__type(graph: USERS)
 {
   createBrand(model: BrandBase!): Brand! @join__field(graph: BRANDS)
   updateBrand(name: String!, model: BrandBase!): Brand! @join__field(graph: BRANDS)
@@ -123,6 +144,9 @@ type Mutation
   deleteCategory(name: String!): Boolean! @join__field(graph: CATEGORIES)
   createProduct(model: ProductInput!): Product! @join__field(graph: PRODUCTS)
   deleteProduct(name: String!): Boolean! @join__field(graph: PRODUCTS)
+  createUser(model: UserInput!): User! @join__field(graph: USERS)
+  updateUser(id: String!, model: UserInput!): User! @join__field(graph: USERS)
+  deleteUser(id: String!): Boolean! @join__field(graph: USERS)
 }
 
 enum NutriScore
@@ -169,6 +193,7 @@ enum Operator
 type Product
   @join__type(graph: PRODUCTS, key: "ean", resolvable: true)
   @join__type(graph: SUPERMARKETS, key: "ean", extension: true)
+  @join__type(graph: USERS, key: "ean", extension: true)
 {
   ean: String!
   name: String! @join__field(graph: PRODUCTS)
@@ -232,6 +257,7 @@ type Query
   @join__type(graph: CATEGORIES)
   @join__type(graph: PRODUCTS)
   @join__type(graph: SUPERMARKETS)
+  @join__type(graph: USERS)
 {
   brand(name: String!): Brand @join__field(graph: BRANDS)
   brands(name: String!): [Brand!]! @join__field(graph: BRANDS)
@@ -243,6 +269,7 @@ type Query
   supermarketLocations(filters: SupermarketLocationFilter!): [SupermarketLocation!]! @join__field(graph: SUPERMARKETS)
   supermarket(id: Int!): Supermarket @join__field(graph: SUPERMARKETS)
   supermarkets(filters: SupermarketFilter!): [Supermarket!]! @join__field(graph: SUPERMARKETS)
+  user(id: String!): User @join__field(graph: USERS)
 }
 
 input StrFilter
@@ -280,6 +307,14 @@ input SupermarketFilter
   image: StrFilter = null
   services: SupermarketServicesListFilter = null
   description: StrFilter = null
+}
+
+type SupermarketList
+  @join__type(graph: USERS)
+{
+  timestamp: String!
+  products: [ListProduct!]!
+  id: String!
 }
 
 type SupermarketLocation
@@ -327,4 +362,26 @@ type SupermarketWithPrice
 {
   price: Float!
   supermarket: Supermarket!
+}
+
+type User
+  @join__type(graph: USERS)
+{
+  firstName: String!
+  lastName: String!
+  email: String!
+  birthDate: String!
+  gender: Gender!
+  supermarketLists: [SupermarketList!]!
+  id: String!
+}
+
+input UserInput
+  @join__type(graph: USERS)
+{
+  firstName: String!
+  lastName: String!
+  email: String!
+  birthDate: String!
+  gender: Gender! = OTHER
 }
