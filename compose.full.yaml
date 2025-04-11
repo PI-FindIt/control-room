@@ -1,0 +1,5 @@
+name: findit
+
+include:
+  - compose.yaml
+  - elk/compose.yaml

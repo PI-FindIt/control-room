@@ -1,7 +1,6 @@
 name: findit
 
 include:
-  - elk/compose.yaml
   - apollo/compose.yaml
   - brand-service/compose.yaml
   - category-service/compose.yaml
