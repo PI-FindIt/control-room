@@ -8,6 +8,8 @@ ifeq ($(TEL),true)
 DOCKER_COMPOSE := $(DOCKER_COMPOSE) -f compose.full.yaml
 endif			
 
+.PHONY: up
+
 schema-generate:
 	@echo "🔄 Generating supergraph schema..."
 	$(DOCKER) image inspect $(ROVER_IMAGE) > /dev/null 2>&1 || $(DOCKER) build -t $(ROVER_IMAGE) apollo

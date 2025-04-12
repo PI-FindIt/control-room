@@ -22,3 +22,6 @@
 [submodule "supermarket-service"]
 	path = supermarket-service
 	url = git@github.com:PI-FindIt/supermarket-service.git
+[submodule "cdn-service"]
+	path = cdn-service
+	url = git@github.com:PI-FindIt/cdn-service.git

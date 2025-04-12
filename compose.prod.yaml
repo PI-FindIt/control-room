@@ -8,6 +8,7 @@ include:
   - product-service/compose.prod.yaml
   - supermarket-service/compose.prod.yaml
   - user-service/compose.prod.yaml
+  - cdn-service/compose.prod.yaml
 
 services:
   traefik:
