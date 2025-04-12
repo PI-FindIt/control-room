@@ -3,13 +3,14 @@ SCHEMA_FILE := apollo/supergraph-schema.graphql
 DOCKER := docker
 DOCKER_COMPOSE := docker compose
 
+
 ifeq ($(TEL),true)
 DOCKER_COMPOSE := $(DOCKER_COMPOSE) -f compose.full.yaml
-endif
+endif			
 
 schema-generate:
 	@echo "🔄 Generating supergraph schema..."
-	$(DOCKER) image inspect $(ROVER_IMAGE) &>/dev/null || $(DOCKER) build -t $(ROVER_IMAGE) apollo
+	$(DOCKER) image inspect $(ROVER_IMAGE) > /dev/null 2>&1 || $(DOCKER) build -t $(ROVER_IMAGE) apollo
 
 	$(DOCKER) run --rm --network findit_backend -v $(PWD)/apollo:/apollo $(ROVER_IMAGE) \
 		rover supergraph compose --elv2-license accept --config /apollo/supergraph.yaml > $(SCHEMA_FILE)
