@@ -142,7 +142,8 @@ type ListProduct
   @join__type(graph: USERS)
 {
   product: Product!
-  _id: CompositeKeyType!
+  supermarket: Supermarket!
+  id_composite: CompositeKeyType!
   quantity: Float!
   supermarket_id: Int!
   status: Status!
@@ -151,7 +152,7 @@ type ListProduct
 input ListProductInput
   @join__type(graph: USERS)
 {
-  _id: CompositeKeyInput!
+  id_composite: CompositeKeyInput!
   quantity: Float!
   supermarket_id: Int!
   status: Status! = ACTIVE
@@ -218,6 +219,38 @@ enum Operator
   NOT_CONTAINS @join__enumValue(graph: PRODUCTS) @join__enumValue(graph: SUPERMARKETS)
   ANY @join__enumValue(graph: PRODUCTS) @join__enumValue(graph: SUPERMARKETS)
   ALL @join__enumValue(graph: PRODUCTS) @join__enumValue(graph: SUPERMARKETS)
+}
+
+enum PathType
+  @join__type(graph: USERS)
+{
+  SHORTEST @join__enumValue(graph: USERS)
+  CHEAPEST @join__enumValue(graph: USERS)
+  FASTEST @join__enumValue(graph: USERS)
+}
+
+type Preferences
+  @join__type(graph: USERS)
+{
+  supermarketsLike: [Int!]!
+  supermarketsDislike: [Int!]!
+  brandsLike: [String!]!
+  brandsDislike: [String!]!
+  maxDistance: Float!
+  budget: Float!
+  pathType: PathType!
+}
+
+input PreferencesInput
+  @join__type(graph: USERS)
+{
+  supermarketsLike: [Int!]! = []
+  supermarketsDislike: [Int!]! = []
+  brandsLike: [String!]! = []
+  brandsDislike: [String!]! = []
+  maxDistance: Float! = 100
+  budget: Float! = -1
+  pathType: PathType! = CHEAPEST
 }
 
 type Product
@@ -326,15 +359,16 @@ input StrListFilter
 }
 
 type Supermarket
-  @join__type(graph: SUPERMARKETS)
+  @join__type(graph: SUPERMARKETS, key: "id", resolvable: true)
+  @join__type(graph: USERS, key: "id", extension: true)
 {
   id: Int!
-  name: String!
-  image: String
-  services: [SupermarketServices!]!
-  description: String
-  locations: [SupermarketLocation!]!
-  products: [ProductWithPrice!]!
+  name: String! @join__field(graph: SUPERMARKETS)
+  image: String @join__field(graph: SUPERMARKETS)
+  services: [SupermarketServices!]! @join__field(graph: SUPERMARKETS)
+  description: String @join__field(graph: SUPERMARKETS)
+  locations: [SupermarketLocation!]! @join__field(graph: SUPERMARKETS)
+  products: [ProductWithPrice!]! @join__field(graph: SUPERMARKETS)
 }
 
 input SupermarketFilter
@@ -416,7 +450,8 @@ type User
   email: String!
   birth_date: String!
   gender: Gender!
-  supermarket_lists: [SupermarketList!]!
+  supermarketLists: [SupermarketList!]!
+  preferences: Preferences!
 }
 
 input UserInput
@@ -427,4 +462,5 @@ input UserInput
   email: String!
   birth_date: String!
   gender: Gender! = OTHER
+  preferences: PreferencesInput = {budget: -1}
 }
