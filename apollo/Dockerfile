@@ -9,7 +9,7 @@ RUN apt update && \
 
 WORKDIR /app
 
-RUN curl -sSL https://rover.apollo.dev/nix/v0.28.1 | sh
+RUN curl -SL https://rover.apollo.dev/nix/v0.28.1 | sh
 
 ENV PATH="/root/.rover/bin:${PATH}"
 RUN rover install --plugin supergraph@latest-2 --elv2-license accept --insecure-accept-invalid-hostnames --insecure-accept-invalid-certs --client-timeout 1000
