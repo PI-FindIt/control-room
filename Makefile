@@ -8,7 +8,8 @@ ifeq ($(TEL),true)
 DOCKER_COMPOSE := $(DOCKER_COMPOSE) -f compose.full.yaml
 endif			
 
-.PHONY: up
+up:
+	$(DOCKER_COMPOSE) up -d --build
 
 schema-generate:
 	@echo "🔄 Generating supergraph schema..."
@@ -28,5 +29,4 @@ down:
 clean: down
 	$(DOCKER) builder prune -a -f
 
-up:
-	$(DOCKER_COMPOSE) up -d --build
+			
