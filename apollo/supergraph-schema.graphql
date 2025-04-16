@@ -174,7 +174,7 @@ type Mutation
   deleteProduct(name: String!): Boolean! @join__field(graph: PRODUCTS)
   upsertUser(model: UserInput!): User! @join__field(graph: USERS)
   createList(userId: String!): SupermarketList @join__field(graph: USERS)
-  upsertProductFromList(model: ListProductInput!): ListProduct @join__field(graph: USERS)
+  upsertProductFromList(models: [ListProductInput!]!): [ListProduct!]! @join__field(graph: USERS)
   deleteUser(id: String!): Boolean! @join__field(graph: USERS)
   deleteProductFromList(ids: CompositeKeyInput!): Boolean! @join__field(graph: USERS)
   deleteList(id: String!): Boolean! @join__field(graph: USERS)
@@ -364,6 +364,7 @@ type Supermarket
 {
   id: Int!
   name: String! @join__field(graph: SUPERMARKETS)
+  logo: String @join__field(graph: SUPERMARKETS)
   image: String @join__field(graph: SUPERMARKETS)
   services: [SupermarketServices!]! @join__field(graph: SUPERMARKETS)
   description: String @join__field(graph: SUPERMARKETS)
@@ -397,7 +398,6 @@ type SupermarketLocation
   supermarketId: Int!
   id: Int!
   name: String
-  image: String
   latitude: Float!
   longitude: Float!
   supermarket: Supermarket
