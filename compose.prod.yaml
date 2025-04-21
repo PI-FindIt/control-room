@@ -16,7 +16,7 @@ services:
     image: "traefik:v3.3"
     command:
       - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=true "
+      - "--providers.docker.exposedbydefault=true"
       - "--entryPoints.web.address=:80"
     ports:
       - "80:80"
