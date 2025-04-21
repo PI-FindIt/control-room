@@ -8,6 +8,11 @@ ifeq ($(TEL),true)
 DOCKER_COMPOSE := $(DOCKER_COMPOSE) -f compose.full.yaml
 endif			
 
+ifeq ($(PROD),true)
+DOCKER_COMPOSE := $(DOCKER_COMPOSE) -f compose.prod.yaml
+endif
+
+
 up:
 	$(DOCKER_COMPOSE) up -d --build
 

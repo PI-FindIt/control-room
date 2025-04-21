@@ -9,7 +9,7 @@ include:
   - supermarket-service/compose.prod.yaml
   - user-service/compose.prod.yaml
   - cdn-service/compose.prod.yaml
-  - recommendation-service/compose.prod.yaml
+  # - recommendation-service/compose.prod.yaml
 
 services:
   traefik:
