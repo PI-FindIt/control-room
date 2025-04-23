@@ -264,7 +264,9 @@ type Product
 {
   ean: String!
   name: String! @join__field(graph: PRODUCTS)
+  nameEn: String! @join__field(graph: PRODUCTS)
   genericName: String! @join__field(graph: PRODUCTS)
+  genericNameEn: String! @join__field(graph: PRODUCTS)
   nutrition: JSON! @join__field(graph: PRODUCTS)
   nutriScore: NutriScore! @join__field(graph: PRODUCTS)
   ingredients: String! @join__field(graph: PRODUCTS)
@@ -284,7 +286,9 @@ input ProductFilter
 {
   ean: StrFilter = null
   name: StrFilter = null
+  nameEn: StrFilter = null
   genericName: StrFilter = null
+  genericNameEn: StrFilter = null
   nutriScore: NutriScoreFilter = null
   ingredients: StrFilter = null
   quantity: StrFilter = null
@@ -300,7 +304,9 @@ input ProductInput
 {
   ean: String!
   name: String!
+  nameEn: String!
   genericName: String!
+  genericNameEn: String!
   nutrition: JSON!
   nutriScore: NutriScore!
   ingredients: String!
