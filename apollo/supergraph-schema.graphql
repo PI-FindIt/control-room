@@ -274,6 +274,7 @@ type Product
   unit: String! @join__field(graph: PRODUCTS)
   keywords: [String!]! @join__field(graph: PRODUCTS)
   images: [String!]! @join__field(graph: PRODUCTS)
+  blurhash: String @join__field(graph: PRODUCTS)
   brandName: String @join__field(graph: PRODUCTS)
   categoryName: String @join__field(graph: PRODUCTS)
   category: Category! @join__field(graph: PRODUCTS)
@@ -314,6 +315,7 @@ input ProductInput
   unit: String!
   keywords: [String!]!
   images: [String!]!
+  blurhash: String
   brandName: String
   categoryName: String
 }
