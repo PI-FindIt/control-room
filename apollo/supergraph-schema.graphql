@@ -113,6 +113,7 @@ enum join__Graph {
   BRANDS @join__graph(name: "brands", url: "http://findit-brand-service-1:8000/graphql")
   CATEGORIES @join__graph(name: "categories", url: "http://findit-category-service-1:8000/graphql")
   PRODUCTS @join__graph(name: "products", url: "http://findit-product-service-1:8000/graphql")
+  RECOMMENDATIONS @join__graph(name: "recommendations", url: "http://findit-recommendation-service-1:8000/graphql")
   SUPERMARKETS @join__graph(name: "supermarkets", url: "http://findit-supermarket-service-1:8000/graphql")
   USERS @join__graph(name: "users", url: "http://findit-user-service-1:8000/graphql")
 }
@@ -174,7 +175,7 @@ type Mutation
   deleteProduct(name: String!): Boolean! @join__field(graph: PRODUCTS)
   upsertUser(model: UserInput!): User! @join__field(graph: USERS)
   createList(userId: String!): SupermarketList @join__field(graph: USERS)
-  upsertProductFromList(model: ListProductInput!): ListProduct @join__field(graph: USERS)
+  upsertProductFromList(models: [ListProductInput!]!): [ListProduct!]! @join__field(graph: USERS)
   deleteUser(id: String!): Boolean! @join__field(graph: USERS)
   deleteProductFromList(ids: CompositeKeyInput!): Boolean! @join__field(graph: USERS)
   deleteList(id: String!): Boolean! @join__field(graph: USERS)
@@ -257,6 +258,7 @@ input PreferencesInput
 
 type Product
   @join__type(graph: PRODUCTS, key: "ean", resolvable: true)
+  @join__type(graph: RECOMMENDATIONS, key: "ean", extension: true)
   @join__type(graph: SUPERMARKETS, key: "ean", extension: true)
   @join__type(graph: USERS, key: "ean", extension: true)
 {
@@ -321,6 +323,7 @@ type Query
   @join__type(graph: BRANDS)
   @join__type(graph: CATEGORIES)
   @join__type(graph: PRODUCTS)
+  @join__type(graph: RECOMMENDATIONS)
   @join__type(graph: SUPERMARKETS)
   @join__type(graph: USERS)
 {
@@ -330,6 +333,7 @@ type Query
   categories(name: String!): [Category!]! @join__field(graph: CATEGORIES)
   product(ean: String!): Product @join__field(graph: PRODUCTS)
   products(filters: ProductFilter!): [Product!]! @join__field(graph: PRODUCTS)
+  textToProduct(text: String!): [Product!]! @join__field(graph: RECOMMENDATIONS)
   supermarketLocation(supermarketId: Int!, id: Int!): SupermarketLocation @join__field(graph: SUPERMARKETS)
   supermarketLocations(filters: SupermarketLocationFilter!): [SupermarketLocation!]! @join__field(graph: SUPERMARKETS)
   supermarket(id: Int!): Supermarket @join__field(graph: SUPERMARKETS)
