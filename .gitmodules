@@ -28,3 +28,6 @@
 [submodule "recommendation-service"]
 	path = recommendation-service
 	url = git@github.com:PI-FindIt/recommendation-service.git
+[submodule "stock-replacer-app"]
+	path = stock-replacer-app
+	url = git@github.com:PI-FindIt/stock-replacer-app.git
