@@ -340,11 +340,20 @@ type Query
   product(ean: String!): Product @join__field(graph: PRODUCTS)
   products(filters: ProductFilter!): [Product!]! @join__field(graph: PRODUCTS)
   textToProduct(text: String!): [Product!]! @join__field(graph: RECOMMENDATIONS)
+  recommendationsByProduct(ean: String!, recommendations: Int! = 5, filters: RecommendationFilterInput = null): [Product!]! @join__field(graph: RECOMMENDATIONS)
+  recommendationsByText(query: String!, recommendations: Int! = 5, filters: RecommendationFilterInput = null): [Product!]! @join__field(graph: RECOMMENDATIONS)
   supermarketLocation(supermarketId: Int!, id: Int!): SupermarketLocation @join__field(graph: SUPERMARKETS)
   supermarketLocations(filters: SupermarketLocationFilter!): [SupermarketLocation!]! @join__field(graph: SUPERMARKETS)
   supermarket(id: Int!): Supermarket @join__field(graph: SUPERMARKETS)
   supermarkets(filters: SupermarketFilter!): [Supermarket!]! @join__field(graph: SUPERMARKETS)
   user(id: String!): User @join__field(graph: USERS)
+}
+
+input RecommendationFilterInput
+  @join__type(graph: RECOMMENDATIONS)
+{
+  category: String = null
+  brand: String = null
 }
 
 enum Status
