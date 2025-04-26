@@ -228,7 +228,11 @@ enum Order
   @join__type(graph: PRODUCTS)
 {
   ASC @join__enumValue(graph: PRODUCTS)
+  ASC_NULLS_FIRST @join__enumValue(graph: PRODUCTS)
+  ASC_NULLS_LAST @join__enumValue(graph: PRODUCTS)
   DESC @join__enumValue(graph: PRODUCTS)
+  DESC_NULLS_FIRST @join__enumValue(graph: PRODUCTS)
+  DESC_NULLS_LAST @join__enumValue(graph: PRODUCTS)
 }
 
 enum PathType
