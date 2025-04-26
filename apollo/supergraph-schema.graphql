@@ -224,6 +224,13 @@ enum Operator
   OFFSET @join__enumValue(graph: PRODUCTS) @join__enumValue(graph: SUPERMARKETS)
 }
 
+enum Order
+  @join__type(graph: PRODUCTS)
+{
+  ASC @join__enumValue(graph: PRODUCTS)
+  DESC @join__enumValue(graph: PRODUCTS)
+}
+
 enum PathType
   @join__type(graph: USERS)
 {
@@ -285,6 +292,8 @@ type Product
 input ProductFilter
   @join__type(graph: PRODUCTS)
 {
+  and: [ProductFilter!] = null
+  or: [ProductFilter!] = null
   ean: StrFilter = null
   name: StrFilter = null
   nameEn: StrFilter = null
@@ -320,6 +329,18 @@ input ProductInput
   categoryName: String
 }
 
+input ProductOrder
+  @join__type(graph: PRODUCTS)
+{
+  ean: Order = null
+  name: Order = null
+  nameEn: Order = null
+  nutriScore: Order = null
+  quantity: Order = null
+  brandName: Order = null
+  categoryName: Order = null
+}
+
 type ProductWithPrice
   @join__type(graph: SUPERMARKETS)
 {
@@ -340,7 +361,7 @@ type Query
   category(name: String!): Category @join__field(graph: CATEGORIES)
   categories(name: String!): [Category!]! @join__field(graph: CATEGORIES)
   product(ean: String!): Product @join__field(graph: PRODUCTS)
-  products(filters: ProductFilter!): [Product!]! @join__field(graph: PRODUCTS)
+  products(filters: ProductFilter = null, orderBy: ProductOrder = null, limit: Int! = 10, offset: Int! = 0): [Product!]! @join__field(graph: PRODUCTS)
   textToProduct(text: String!): [Product!]! @join__field(graph: RECOMMENDATIONS)
   recommendationsByProduct(ean: String!, recommendations: Int! = 5, filters: RecommendationFilterInput = null): [Product!]! @join__field(graph: RECOMMENDATIONS)
   recommendationsByText(query: String!, recommendations: Int! = 5, filters: RecommendationFilterInput = null): [Product!]! @join__field(graph: RECOMMENDATIONS)
@@ -388,7 +409,9 @@ type Supermarket
   id: Int!
   name: String! @join__field(graph: SUPERMARKETS)
   logo: String @join__field(graph: SUPERMARKETS)
+  logoBlurhash: String @join__field(graph: SUPERMARKETS)
   image: String @join__field(graph: SUPERMARKETS)
+  imageBlurhash: String @join__field(graph: SUPERMARKETS)
   services: [SupermarketServices!]! @join__field(graph: SUPERMARKETS)
   description: String @join__field(graph: SUPERMARKETS)
   locations: [SupermarketLocation!]! @join__field(graph: SUPERMARKETS)
