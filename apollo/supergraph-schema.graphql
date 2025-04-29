@@ -143,7 +143,7 @@ type ListProduct
   @join__type(graph: USERS)
 {
   product: Product!
-  supermarket: Supermarket!
+  supermarketInfo: SupermarketWithPrice!
   id_composite: CompositeKeyType!
   quantity: Float!
   supermarket_id: Int!
@@ -408,18 +408,17 @@ input StrListFilter
 
 type Supermarket
   @join__type(graph: SUPERMARKETS, key: "id", resolvable: true)
-  @join__type(graph: USERS, key: "id", extension: true)
 {
   id: Int!
-  name: String! @join__field(graph: SUPERMARKETS)
-  logo: String @join__field(graph: SUPERMARKETS)
-  logoBlurhash: String @join__field(graph: SUPERMARKETS)
-  image: String @join__field(graph: SUPERMARKETS)
-  imageBlurhash: String @join__field(graph: SUPERMARKETS)
-  services: [SupermarketServices!]! @join__field(graph: SUPERMARKETS)
-  description: String @join__field(graph: SUPERMARKETS)
-  locations: [SupermarketLocation!]! @join__field(graph: SUPERMARKETS)
-  products: [ProductWithPrice!]! @join__field(graph: SUPERMARKETS)
+  name: String!
+  logo: String
+  logoBlurhash: String
+  image: String
+  imageBlurhash: String
+  services: [SupermarketServices!]!
+  description: String
+  locations: [SupermarketLocation!]!
+  products: [ProductWithPrice!]!
 }
 
 input SupermarketFilter
@@ -482,10 +481,15 @@ input SupermarketServicesListFilter
 }
 
 type SupermarketWithPrice
-  @join__type(graph: SUPERMARKETS)
+  @join__type(graph: SUPERMARKETS, key: "id")
+  @join__type(graph: SUPERMARKETS, key: "ean")
+  @join__type(graph: USERS, key: "id", extension: true)
+  @join__type(graph: USERS, key: "ean", extension: true)
 {
-  price: Float!
-  supermarket: Supermarket!
+  id: Int!
+  ean: String!
+  price: Float! @join__field(graph: SUPERMARKETS)
+  supermarket: Supermarket! @join__field(graph: SUPERMARKETS)
 }
 
 type User
