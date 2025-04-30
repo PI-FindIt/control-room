@@ -481,10 +481,8 @@ input SupermarketServicesListFilter
 }
 
 type SupermarketWithPrice
-  @join__type(graph: SUPERMARKETS, key: "id")
-  @join__type(graph: SUPERMARKETS, key: "ean")
-  @join__type(graph: USERS, key: "id", extension: true)
-  @join__type(graph: USERS, key: "ean", extension: true)
+  @join__type(graph: SUPERMARKETS, key: "id ean")
+  @join__type(graph: USERS, key: "id ean", extension: true)
 {
   id: Int!
   ean: String!
