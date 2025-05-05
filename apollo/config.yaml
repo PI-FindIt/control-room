@@ -6,4 +6,7 @@ traffic_shaping:
     products:
       timeout: 10000s
   router:
-    timeout: 10000s 
+    timeout: 10000s
+
+cors:
+  allow_any_origin: true
