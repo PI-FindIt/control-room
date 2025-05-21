@@ -105,6 +105,15 @@ input IntFilter
   op: Operator!
 }
 
+enum ItemType
+  @join__type(graph: USERS)
+{
+  NORMAL @join__enumValue(graph: USERS)
+  AI @join__enumValue(graph: USERS)
+  VOICE @join__enumValue(graph: USERS)
+  MIXED @join__enumValue(graph: USERS)
+}
+
 scalar join__DirectiveArguments
 
 scalar join__FieldSet
@@ -148,6 +157,7 @@ type ListProduct
   quantity: Float!
   supermarket_id: Int!
   status: Status!
+  type: ItemType!
 }
 
 input ListProductInput
@@ -157,6 +167,7 @@ input ListProductInput
   quantity: Float!
   supermarket_id: Int!
   status: Status! = ACTIVE
+  type: ItemType! = NORMAL
 }
 
 type Mutation
@@ -174,8 +185,10 @@ type Mutation
   createProduct(model: ProductInput!): Product! @join__field(graph: PRODUCTS)
   deleteProduct(name: String!): Boolean! @join__field(graph: PRODUCTS)
   upsertUser(model: UserInput!): User! @join__field(graph: USERS)
-  createList(userId: String!): SupermarketList @join__field(graph: USERS)
+  createList(userId: String!, eanList: [String!] = null): SupermarketList @join__field(graph: USERS)
+  shareList(userId: String!, listId: String!): SupermarketList @join__field(graph: USERS)
   upsertProductFromList(models: [ListProductInput!]!): [ListProduct!]! @join__field(graph: USERS)
+  updateRaw(listId: String!, value: String!): SupermarketList! @join__field(graph: USERS)
   deleteUser(id: String!): Boolean! @join__field(graph: USERS)
   deleteProductFromList(ids: CompositeKeyInput!): Boolean! @join__field(graph: USERS)
   deleteList(id: String!): Boolean! @join__field(graph: USERS)
@@ -367,6 +380,7 @@ type Query
   product(ean: String!): Product @join__field(graph: PRODUCTS)
   products(filters: ProductFilter = null, orderBy: ProductOrder = null, limit: Int! = 10, offset: Int! = 0): [Product!]! @join__field(graph: PRODUCTS)
   textToProduct(text: String!): [Product!]! @join__field(graph: RECOMMENDATIONS)
+  rawListByUserAndAi(userId: String!, k: Int! = 20): [Product!]! @join__field(graph: RECOMMENDATIONS)
   recommendationsByProduct(ean: String!, recommendations: Int! = 5, filters: RecommendationFilterInput = null): [Product!]! @join__field(graph: RECOMMENDATIONS)
   recommendationsByText(query: String!, recommendations: Int! = 5, filters: RecommendationFilterInput = null): [Product!]! @join__field(graph: RECOMMENDATIONS)
   supermarketLocation(supermarketId: Int!, id: Int!): SupermarketLocation @join__field(graph: SUPERMARKETS)
@@ -434,9 +448,15 @@ input SupermarketFilter
 type SupermarketList
   @join__type(graph: USERS)
 {
+  owner: User!
+  collaborators: [User!]!
+
   """MongoDB document ObjectID"""
   _id: String!
+  owner_id: String!
+  collaborator_ids: [String!]!
   timestamp: DateTime!
+  raw: String!
   products: [ListProduct!]!
   status: Status!
 }
@@ -494,6 +514,7 @@ type User
   @join__type(graph: USERS)
 {
   actualList: SupermarketList
+  collaborativeLists: [SupermarketList!]!
 
   """MongoDB document ObjectID"""
   _id: String!
