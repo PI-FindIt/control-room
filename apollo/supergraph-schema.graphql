@@ -388,6 +388,8 @@ type Query
   supermarket(id: Int!): Supermarket @join__field(graph: SUPERMARKETS)
   supermarkets(filters: SupermarketFilter!): [Supermarket!]! @join__field(graph: SUPERMARKETS)
   user(id: String!): User @join__field(graph: USERS)
+  users(name: String!): [User!]! @join__field(graph: USERS)
+  list(id: String!): SupermarketList @join__field(graph: USERS)
 }
 
 input RecommendationFilterInput
