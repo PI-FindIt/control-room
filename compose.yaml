@@ -27,6 +27,12 @@ services:
     networks:
       - backend
       - analytics
+  cloudflare:
+    image: cloudflare/cloudflared:latest
+    restart: always
+    command: tunnel --no-autoupdate run
+    env_file: .env
+
 
 networks:
   backend:
